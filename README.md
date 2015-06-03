@@ -29,4 +29,5 @@ OK great, we have a directory with 4 data sets. Lets plot the first one, we're i
 $> lazy.py 4 6 run1.dat
 run1.dat
 Wrote file /home/acadien/Dropbox/lazy.png
+```
 ![alt tag](http://i.imgur.com/7Ku4nGp.png)
