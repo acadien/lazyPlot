@@ -1,13 +1,13 @@
 # lazyPlot
-A super simple CLI tool for plotting CSV and columnar data sets *quickly*. lazyPlot automagically detects columns of numbers and renders them. Several options for selecting columns, multiple data sets, and setting plot styles. Simple operations like averaging, scaling and smoothing are possible all directly from the command line. 
+A super simple command line tool for plotting CSV and columnar data sets **quickly**. lazy automagically detects columns of numbers and renders them using the options you provide. There are switches for selecting columns, multiple data sets, and setting plot styles. Simple operations like averaging, scaling and smoothing are possible all directly from the command line. 
 
 #Examples
 
-If you need help installing lazy check out the directions below.
+If you need help installing lazy check out the installation directions at the bottom.
 
-Suppose you have a set of raw data that is formatted in columns, space seperated but has a couple of lines of text in it and a couple of comments. lazy will ignore lines starting with '#' and lines that don't seem to have any data in them. Lazy only parses and stores column formated numeric data. 
+You have a collection of raw data that is formatted in columns, has comments and bits of garbage spattered around. lazy will ignore comment lines and lines that don't seem to have any data in them. Lazy only parses and stores columns of numeric data. 
 
-Lets try out lazy. 
+###Lets get lazy###
 ```
 $> cd daDataRuns
 $> ls
@@ -84,3 +84,68 @@ run2.dat
 run3.dat
 ```
 ![alt tag](http://i.imgur.com/GdQxARp.png)
+
+SMOOOOOOOOOOOOOTHER! And on both axes.
+```
+$> lazy.py 6s500 4s500 run?.dat -sort
+run04.dat
+run1.dat
+run2.dat
+run3.dat
+```
+![alt tag](http://i.imgur.com/PUh7H2A.png)
+
+YESSSSSSSSSSS! Now make it a scatter plot with only 1/100 points plotted!
+```
+$> lazy.py 6s500 4s500 run?.dat -scatter 100
+run04.dat
+run1.dat
+run2.dat
+run3.dat
+```
+![alt tag](http://i.imgur.com/4qFPbQf.png)
+
+Now lets go insane and plot columns 8 & 6 for some files and columnes 7 & 6 for other files. Scale column 6 by 0.5
+and label the y-axis to "lazyuser".
+```
+$> lazy.py 8 6 run04.dat run1.dat 7 6x0.5 run2.dat run3.dat -ylabel lazyuser
+run04.dat
+run1.dat
+run2.dat
+run3.dat
+```
+![alt tag](http://i.imgur.com/6B8ZSzB.png)
+
+##Other supported options:
+-avg : does a point for point averaging accross files with selected columns
+-saveFig : saves a "lazy.png" figure to the local directory instead of plotting
+-noLeg: turn off the legend
+-logx, -logy: log scale for the desired axis
+-altSmooth: turns on an alternative smoothing algorithm that uses a gaussian mixture, scaling parameter should be ~0.5.
+
+**Run lazy with -h or with no arguments and it will give you a list of options.**
+
+##Use lazy on a remote server without X11 forwarding.
+Sometimes you need to generate a plot from your cell phone during a meeting (wait what), or maybe you're using a remote server that does not allow X11 forwarding with (AIX I'm looking at you). lazy will automatically detect when X11 is not available and it will write your figure to a directory of your choosing. Set the variable:
+REMOTESESSION_BASEDIR at the top of the plotRemote.py script to choose a new base directory. Works great in conjunction with Dropbox or some other directory sharing service.
+
+
+#Installation
+
+You'll need: python (2.7+) numpy, matplotlib and scipy. Clone this repo:
+```
+git clone git@github.com:acadien/lazyPlot.git
+```
+
+Edit your .bashrc and add the lines:
+```
+export PYTHONPATH=$PYTHONPATH:"/directory/to/lazyPlot/"
+export PATH=$PATH:"/directory/to/lazyPlot/"
+```
+
+And consider adding the alias:
+```
+alias lazy=lazy.py
+```
+
+If you want automated remote file saving use
