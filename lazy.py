@@ -74,8 +74,8 @@ def usage():
     print "./plot2.py 0 1 datafile1 0 2 datafile2 datafile3"
     print "./plot2.py 0 1s25 datafile1     #windowed average of width 25 is applied"
     print "./plot2.py 0x0.5 1x2.0 datafile #scale of 0.5 on x-axis and scale of 2.0 on y-axis"
-    print "switches: -stagger, -sort, -avg, -scatter, -noLeg, -saveData, -altSmooth, -logx, -logy"
-    print "switches: -alpha#val, -title <title>"
+    print "switches: -stagger, -sort, -avg, -scatter, -noLeg, -altSmooth, -logx, -logy, -saveFig"
+    print "switches with parameters: -alpha <alpha>, -title <title> -xlabel <xlabel> -ylabel <ylabel>"
     print ""
 
 if len(sys.argv)==1:
@@ -96,17 +96,34 @@ if __name__=="__main__":
     #Pre-parse for switches
     nbins=80
     alpha=1.0 #transparency
-    switches={"-stagger":False,"-sort":False,"-avg":False,"-scatter":False, "-noLeg":False, "-saveData":False, "-altSmooth":False, "-h":False,"-alpha":None,"-logx":False,"-logy":False}
+    switches={"-stagger":False,"-sort":False,"-avg":False,"-scatter":False, "-noLeg":False, "-saveData":False, "-saveFig":False, "-altSmooth":False, "-h":False,"-alpha":None,"-logx":False,"-logy":False,"-title":False,"-xlabel":False,"-ylabel":False}
+
     for i in range(len(sys.argv)-1,-1,-1):
-        if "-alpha" in sys.argv[i]: #special case alpha
+
+        if "-alpha" == sys.argv[i]: #special case alpha
             switches["-alpha"]=True
-            alpha = float(sys.argv[i].lstrip("-alpha"))
             sys.argv.pop(i)
+            alpha = float(sys.argv.pop(i))
+
+        elif "-xlabel" == sys.argv[i]:
+            sys.argv.pop(i)
+            switches["-xlabel"]=sys.argv.pop(i)
+
+        elif "-ylabel" == sys.argv[i]:
+            sys.argv.pop(i)
+            switches["-ylabel"]=sys.argv.pop(i)
+
+        elif "-title" == sys.argv[i]:
+            sys.argv.pop(i)
+            switches["-title"]=sys.argv.pop(i)
+
+        elif "-scatter" == sys.argv[i]:
+            sys.argv.pop(i)
+            switches["-scatter"]=sys.argv.pop(i)
+
         elif sys.argv[i] in switches.keys(): 
             switches[sys.argv[i]]=True
             sys.argv.pop(i)
-        else:
-            break
 
     if switches["-h"]:
         usage()
@@ -257,7 +274,7 @@ if __name__=="__main__":
         print fname
     label=labels[0]
 
-    fig=pl.figure(figsize=[18,9])
+    fig=pl.figure()
     pl.grid()
     
     for i in range(sum(columnFileCounter)):
@@ -361,8 +378,9 @@ if __name__=="__main__":
                 xdata=xdataSmooth
             if ySmoothEnable:
                 ydata=ydataSmooth
-
-            pl.scatter(xdata,ydata,lw=0.5,label=fileNames[i],facecolor=vizSpec(float(i)/max((nFileNames-1),1) ))
+            
+            nPoints = int(switches["-scatter"])
+            pl.scatter(xdata[::nPoints],ydata[::nPoints],lw=0.1,label=fileNames[i],facecolor=vizSpec(float(i)/max((nFileNames-1),1) ))
 
 
         else: #Regular plot, multiple lines
@@ -377,15 +395,31 @@ if __name__=="__main__":
     if switches["-avg"]:
         avgy=[i/count for i in avgy]
         pl.plot(avgx,avgy)
-        if switches["-saveData"]:
-            data=label[xCol] + " " + label[yCol] + "\n"
-            for x,y in zip(avgx,avgy):
-                data+=str(x)+" "+str(y)+"\n"
-            open("lazy.data","w").write(data)
+    
+    """ #Still figuring this one out...
+    if switches["-saveData"]:
+        data=label[xCol] + " " + label[yCol] + "\n"
+        for x,y in zip(avgx,avgy):
+            data+=str(x)+" "+str(y)+"\n"
+        open("lazy.data","w").write(data)
+    """
 
     if not switches["-noLeg"]:
         pl.legend(loc=0)
 
     pl.gca().autoscale_view(True,True,True)
 
-    pr.prshow("lazy.png")
+    if switches["-title"]:
+        pl.title(switches["-title"])
+
+    if switches["-xlabel"]:
+        pl.xlabel(switches["-xlabel"])
+
+    if switches["-ylabel"]:
+        pl.ylabel(switches["-ylabel"])
+
+    if switches["-saveFig"]:
+        pl.savefig("lazy.png")
+        print "Wrote file lazy.png"
+    else:
+        pr.prshow("lazy.png")
