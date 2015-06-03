@@ -116,6 +116,13 @@ run3.dat
 ```
 ![alt tag](http://i.imgur.com/6B8ZSzB.png)
 
+What if our data is just a single column? Set the column selector to -1 to use a range(N) instead.
+```
+$> lazy.py -1 0 singlecolumn.dat
+singlecolumn.dat
+```
+![alt tag](http://i.imgur.com/V5ETGHy.png)
+
 ##Other supported options:
 - avg : does a point for point averaging accross files with selected columns
 - saveFig : saves a "lazy.png" figure to the local directory instead of plotting
