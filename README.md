@@ -117,11 +117,11 @@ run3.dat
 ![alt tag](http://i.imgur.com/6B8ZSzB.png)
 
 ##Other supported options:
--avg : does a point for point averaging accross files with selected columns
--saveFig : saves a "lazy.png" figure to the local directory instead of plotting
--noLeg: turn off the legend
--logx, -logy: log scale for the desired axis
--altSmooth: turns on an alternative smoothing algorithm that uses a gaussian mixture, scaling parameter should be ~0.5.
+- avg : does a point for point averaging accross files with selected columns
+- saveFig : saves a "lazy.png" figure to the local directory instead of plotting
+- noLeg: turn off the legend
+- logx, -logy: log scale for the desired axis
+- altSmooth: turns on an alternative smoothing algorithm that uses a gaussian mixture, scaling parameter should be ~0.5.
 
 **Run lazy with -h or with no arguments and it will give you a list of options.**
 
