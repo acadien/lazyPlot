@@ -147,5 +147,3 @@ And consider adding the alias:
 ```
 alias lazy=lazy.py
 ```
-
-If you want automated remote file saving use
