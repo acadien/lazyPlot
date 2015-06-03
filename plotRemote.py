@@ -11,7 +11,9 @@ import matplotlib
 
 #use plotRemote.prshow() instead of pylab.show()
 
-from lazy import REMOTESESSION_BASEDIR
+#Set this variable to select a directory to spit out plots in. Handy when used in conjunction with Dropbox.
+REMOTESESSION_BASEDIR="/home/acadien/Dropbox/"
+REMOTESESSION_BASEDIR=REMOTESESSION_BASEDIR.rstrip("/")+"/"
 
 try:
     os.environ['SSH_CLIENT']

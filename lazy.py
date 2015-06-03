@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-#Set this if you plan on running lazy romtely without X11 support and would like to dump your
-#plots to (say) a Dropbox folder.
-REMOTESESSION_BASEDIR = "/home/acadien/Dropbox/"
-
 #local
 import plotRemote as pr
 #standard
