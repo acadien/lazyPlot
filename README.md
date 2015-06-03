@@ -5,7 +5,7 @@ A super simple command line tool for plotting CSV and columnar data sets **quick
 
 If you need help installing lazy check out the installation directions at the bottom.
 
-You have a collection of raw data that is formatted in columns, has comments and bits of garbage spattered around. lazy will ignore comment lines and lines that don't seem to have any data in them. Lazy only parses and stores columns of numeric data. 
+lazy only parses and stores columns of numeric data, it does its best to ignore comments and bigs of garbage strewn in files of mostly clean data.
 
 ###Lets get lazy###
 ```
