@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 
+#Set this if you plan on running lazy romtely without X11 support and would like to dump your
+#plots to (say) a Dropbox folder.
+REMOTESESSION_BASEDIR = "/home/acadien/Dropbox/"
+
 #local
 import plotRemote as pr
 #standard
 import re, sys, select
 import pylab as pl
 import numpy as np
-import matplotlib.pyplot as plt
 #local
-from datatools import windowAvg,gaussSmooth,wsmooth,superSmooth
+from smoothing import windowAvg,superSmooth
 from colors import vizSpec
 
 #attempts to parse a file, keeping only rows that can be converted to floats
@@ -75,7 +78,7 @@ def usage():
     print "./plot2.py 0 1 datafile1 0 2 datafile2 datafile3"
     print "./plot2.py 0 1s25 datafile1     #windowed average of width 25 is applied"
     print "./plot2.py 0x0.5 1x2.0 datafile #scale of 0.5 on x-axis and scale of 2.0 on y-axis"
-    print "switches: -stagger, -sort, -avg, -scatter, -noLeg, -saveData, -gauss, -ghost -logx -logy"
+    print "switches: -stagger, -sort, -avg, -scatter, -noLeg, -saveData, -altSmooth, -logx, -logy"
     print "switches: -alpha#val, -title <title>"
     print ""
 
@@ -97,7 +100,7 @@ if __name__=="__main__":
     #Pre-parse for switches
     nbins=80
     alpha=1.0 #transparency
-    switches={"-stagger":False,"-sort":False,"-avg":False,"-scatter":False, "-noLeg":False, "-saveData":False, "-gauss":False, "-ghost":False, "-h":False,"-alpha":None,"-logx":False,"-logy":False}
+    switches={"-stagger":False,"-sort":False,"-avg":False,"-scatter":False, "-noLeg":False, "-saveData":False, "-altSmooth":False, "-h":False,"-alpha":None,"-logx":False,"-logy":False}
     for i in range(len(sys.argv)-1,-1,-1):
         if "-alpha" in sys.argv[i]: #special case alpha
             switches["-alpha"]=True
@@ -224,15 +227,16 @@ if __name__=="__main__":
                 yScales.append(yscale)
 
     #Grab the file name
-    fnames=[sys.argv[i] for i in fileIndeces]
+    fileNames=[sys.argv[i] for i in fileIndeces]
+    nFileNames = len(fileNames)
     if switches['-sort']:
         #Sorting might introduce undesirable behavior so skip it
         #if you're only selecting 1 column then sort the file names
         if len(columnFileCounter)==1: 
             try:
-                fnamenumbers=map(lambda x:float(".".join(re.findall('\d+',x))),fnames)
-                if len(fnames) == len(fnamenumbers):
-                    fnames=zip(*sorted(zip(fnames,fnamenumbers),key=lambda x:x[1]))[0]
+                fnamenumbers=map(lambda x:float(".".join(re.findall('\d+',x))),fileNames)
+                if nFileNames == len(fnamenumbers):
+                    fileNames=zip(*sorted(zip(fileNames,fnamenumbers),key=lambda x:x[1]))[0]
             except ValueError:
                 pass
 
@@ -242,13 +246,11 @@ if __name__=="__main__":
 
     #Colors
     colors = None
-    if len(fnames)>7:
-        colors=True
 
     #Load up the data and the label guesses
     labels=list()
     fdatas=list()
-    for fname in fnames:
+    for fname in fileNames:
         if fname[-3:]=="csv":
             l,f = parse(fname,",")
         else:
@@ -289,18 +291,18 @@ if __name__=="__main__":
         ydataSmooth=[]
 
         if xSmoothEnable:
-            if switches["-gauss"]:
+            if switches["-altSmooth"]:
                 xdataSmooth=superSmooth(xdata,ydata,xWAN/100.0)
             else:
                 xdataSmooth=windowAvg(xdata,xWAN)
         if ySmoothEnable:
-            if switches["-gauss"]:
+            if switches["-altSmooth"]:
                 ydataSmooth=superSmooth(xdata,ydata,yWAN/100.0)
             else:
                 ydataSmooth=windowAvg(ydata,yWAN)
 
         #Correct for window offset, average introduces extra points that need to be chopped off
-        if not switches["-gauss"] and xSmoothEnable or ySmoothEnable: 
+        if not switches["-altSmooth"] and xSmoothEnable or ySmoothEnable: 
             WAN=max(xWAN,yWAN)
             xdataSmooth=xdataSmooth[WAN/2+1:WAN/-2]
             ydataSmooth=ydataSmooth[WAN/2+1:WAN/-2]
@@ -364,36 +366,18 @@ if __name__=="__main__":
             if ySmoothEnable:
                 ydata=ydataSmooth
 
-            pl.scatter(xdata,ydata,lw=0.5,label=fnames[i],facecolor=vizSpec(float(i)/(len(fnames)-1)))
-            print i
+            pl.scatter(xdata,ydata,lw=0.5,label=fileNames[i],facecolor=vizSpec(float(i)/max((nFileNames-1),1) ))
+
+
         else: #Regular plot, multiple lines
-            #if colors==None:
-            #    cp, = pl.plot([],[])
-            #    cc = cp.get_color()
-            #else:
-            cc=vizSpec(float(i)/(len(fnames)-1))
+            cc=vizSpec(float(i)/max(nFileNames-1,1) )
 
-            if xSmoothEnable or ySmoothEnable:
-                if switches["-ghost"]:
-                    if colors==None:
-                        cp, = pl.plot(xdata,ydata,alpha=0.4,zorder=1)
-                        cc  = cp.get_color()
-                    else:
-                        pass
-                        pl.plot(xdata,ydata,alpha=0.4,zorder=1,c=cc)
-
-            if xSmoothEnable and ySmoothEnable:
-                pl.plot(xdataSmooth,ydataSmooth,c=cc,lw=2,label=fnames[i],alpha=alpha)
-
-            elif ySmoothEnable:
-                pl.plot(xdata,ydataSmooth,c=cc,lw=2,label=fnames[i],alpha=alpha)
-
-            elif xSmoothEnable:
-                pl.plot(xdataSmooth,ydata,c=cc,lw=2,label=fnames[i],alpha=alpha)
-
-            else:
-                pl.plot(xdata,ydata,lw=1.5,c=cc,label=fnames[i],alpha=alpha)            
-
+            if xSmoothEnable:
+                xdata=xdataSmooth
+            if ySmoothEnable:
+                ydata=ydataSmooth
+            pl.plot(xdata,ydata,lw=1.5,c=cc,label=fileNames[i],alpha=alpha)            
+            
     if switches["-avg"]:
         avgy=[i/count for i in avgy]
         pl.plot(avgx,avgy)
@@ -401,9 +385,11 @@ if __name__=="__main__":
             data=label[xCol] + " " + label[yCol] + "\n"
             for x,y in zip(avgx,avgy):
                 data+=str(x)+" "+str(y)+"\n"
-            open("plot2.data","w").write(data)
+            open("lazy.data","w").write(data)
 
     if not switches["-noLeg"]:
         pl.legend(loc=0)
-    
-    pr.prshow("plot2.png")
+
+    pl.gca().autoscale_view(True,True,True)
+
+    pr.prshow("lazy.png")

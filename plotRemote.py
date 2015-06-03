@@ -2,16 +2,17 @@
 
 import os
 import matplotlib
-#import matplotlib.pyplot as plt
+
+#This must be imported before importing pylab
 
 #This script detects if a session is being run remotely:
 #if remote - save figure to directory BASEDIR
 #if local - plot it
-#How to use this script: import *before* importing pylab or mpl
-#use prshow(fname) instead of pylab.show()
 
-REMOTESESSION_BASEDIR = "/home/acadien/Dropbox/"
-#plt.style.use('ggplot')
+#use plotRemote.prshow() instead of pylab.show()
+
+from lazy import REMOTESESSION_BASEDIR
+
 try:
     os.environ['SSH_CLIENT']
 except KeyError:
@@ -22,15 +23,17 @@ else:
     import matplotlib
     matplotlib.use("Agg")
 
-import socket
-if socket.gethostname()=="mozart":
-    REMOTESESSION = False
-    import matplotlib
-    matplotlib.use('WX')
-
-def prshow(fname="latestplot.png"):
-#    plt.grid(True)
+def prshow(fname="lazy.png"):
     if REMOTESESSION:
         matplotlib.pyplot.savefig(REMOTESESSION_BASEDIR + fname)
+        print "Wrote file %s"%(REMOTESESSION_BASEDIR + fname)
     else:
         matplotlib.pyplot.show()
+
+#Example special case for a specific server
+#import socket
+#if socket.gethostname()=="some_server_name":
+#    REMOTESESSION = False
+#    import matplotlib
+#    matplotlib.use('WX')
+
