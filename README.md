@@ -37,7 +37,7 @@ run1.dat
 Great! Notice that lazy pulls the appropriate names for the x-axis and y-axis labels. These can be over-written using the -xlabel and -ylabel switches, you can also set a title. Lets compare all four of these runs...
 
 ```
-$> lazy.py 4 6 run?.dat
+$> lazy.py 4 6 run*.dat
 run04.dat
 run1.dat
 run2.dat
@@ -47,7 +47,7 @@ run3.dat
 
 COOL! But I want my files plotted in order... 
 ```
-$> lazy.py 4 6 run?.dat -sort
+$> lazy.py 4 6 run*.dat -sort
 run04.dat
 run1.dat
 run2.dat
@@ -57,7 +57,7 @@ run3.dat
 
 WOWSERS! But I want that data to be transparent...
 ```
-$> lazy.py 4 6 run?.dat -sort -alpha 0.7
+$> lazy.py 4 6 run*.dat -sort -alpha 0.7
 run04.dat
 run1.dat
 run2.dat
@@ -67,7 +67,7 @@ run3.dat
 
 IMPRESSIVE! But I want to spread things out a bit...
 ```
-$> lazy.py 4 6 run?.dat -sort -stagger
+$> lazy.py 4 6 run*.dat -sort -stagger
 run04.dat
 run1.dat
 run2.dat
@@ -77,7 +77,7 @@ run3.dat
 
 SPECTACULAR! But I want to switch the axes and apply a windowed average to the x-axis with window of size 103 points.
 ```
-$> lazy.py 6 4s103 run?.dat -sort
+$> lazy.py 6 4s103 run*.dat -sort
 run04.dat
 run1.dat
 run2.dat
@@ -87,7 +87,7 @@ run3.dat
 
 SMOOOOOOOOOOOOOTHER! And on both axes.
 ```
-$> lazy.py 6s500 4s500 run?.dat -sort
+$> lazy.py 6s500 4s500 run*.dat -sort
 run04.dat
 run1.dat
 run2.dat
@@ -97,7 +97,7 @@ run3.dat
 
 YESSSSSSSSSSS! Now make it a scatter plot with only 1/100 points plotted!
 ```
-$> lazy.py 6s500 4s500 run?.dat -scatter 100
+$> lazy.py 6s500 4s500 run*.dat -scatter 100
 run04.dat
 run1.dat
 run2.dat
